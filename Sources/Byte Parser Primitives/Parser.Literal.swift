@@ -4,7 +4,6 @@
 // Byte-specific (Input.Element == UInt8); moved from swift-parser-primitives
 // in Wave 3 of the byte-extraction arc.
 
-public import Byte_Primitives
 public import Parser_Primitives_Core
 public import Parser_EndOfInput_Primitives
 public import Parser_Match_Primitives
