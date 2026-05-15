@@ -42,7 +42,9 @@ let package = Package(
                 .product(name: "Parser Take Primitives", package: "swift-parser-primitives"),
                 .product(name: "Byte Primitives", package: "swift-byte-primitives"),
                 .product(name: "Either Primitives", package: "swift-either-primitives"),
+                .product(name: "Input Primitives", package: "swift-input-primitives"),
                 .product(name: "Array Primitives Core", package: "swift-array-primitives"),
+                .product(name: "Array Dynamic Primitives", package: "swift-array-primitives"),
             ]
         ),
         .target(
@@ -51,11 +53,6 @@ let package = Package(
                 "Byte Parser Primitives",
                 .product(name: "Byte Primitives Test Support", package: "swift-byte-primitives"),
                 .product(name: "Input Primitives", package: "swift-input-primitives"),
-                .product(name: "Collection Primitives", package: "swift-collection-primitives"),
-                .product(name: "Index Primitives", package: "swift-index-primitives"),
-                .product(name: "Cardinal Primitives", package: "swift-cardinal-primitives"),
-                .product(name: "Sequence Primitives", package: "swift-sequence-primitives"),
-                .product(name: "Index Primitives Test Support", package: "swift-index-primitives"),
             ],
             path: "Tests/Support"
         ),

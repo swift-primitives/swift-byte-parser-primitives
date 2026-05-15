@@ -1,25 +1,32 @@
-// Parser.Literal.swift
+// Byte.Literal.Parser.swift
 //
-// Literal byte sequence matching. Consumes exact bytes from the input.
-// Byte-specific (Input.Element == UInt8); moved from swift-parser-primitives
-// in Wave 3 of the byte-extraction arc.
+// Literal byte sequence matching. The parser lives in the `Byte.Literal`
+// sub-domain per the institute's Domain.Subdomain naming convention: `Byte`
+// is the byte-domain namespace; `Literal` is the byte-literal sub-concept;
+// `Parser` is its parsing role.
 
+public import Byte_Primitives
 public import Parser_Primitives_Core
 public import Parser_EndOfInput_Primitives
 public import Parser_Match_Primitives
 public import Either_Primitives
 internal import Array_Primitives_Core
 
-extension Parser {
+extension Byte {
+    /// Namespace for byte-literal types — fixed byte sequences interpreted
+    /// as literal patterns to match or emit.
+    public enum Literal {}
+}
+
+extension Byte.Literal {
     /// A parser that matches a specific byte sequence.
     ///
-    /// `Literal` consumes exact bytes from the input. It succeeds with `Void`
-    /// output, making it ideal for delimiters and keywords.
+    /// `Parser` consumes exact bytes from the input, succeeding with `Void`
+    /// output. Ideal for delimiters, magic numbers, and keyword matching.
     ///
-    /// This parser only requires `Streaming` capability (no backtracking),
-    /// making it suitable for forward-only input sources. Note that on
-    /// partial match failure, input is left partially consumed.
-    public struct Literal<Input: Parser.Input.Streaming>
+    /// Requires only `Streaming` capability (no backtracking). Note that on
+    /// partial-match failure, input is left partially consumed.
+    public struct Parser<Input: Parser_Primitives_Core.Parser.Input.Streaming>
     where Input.Element == UInt8 {
         @usableFromInline
         let bytes: [UInt8]
@@ -31,18 +38,19 @@ extension Parser {
 
         @inlinable
         public init(_ string: StaticString) {
-            self.bytes = unsafe Swift.Array(
+            unsafe (self.bytes = Swift.Array(
                 string.utf8Start.withMemoryRebound(to: UInt8.self, capacity: string.utf8CodeUnitCount) {
-                    unsafe UnsafeBufferPointer(start: $0, count: string.utf8CodeUnitCount)
+                    UnsafeBufferPointer(start: $0, count: string.utf8CodeUnitCount)
                 }
-            )
+            ))
         }
     }
 }
 
-extension Parser.Literal: Parser.`Protocol` {
+extension Byte.Literal.Parser: Parser_Primitives_Core.Parser.`Protocol` {
     public typealias Output = Void
-    public typealias Failure = Either<Parser.EndOfInput.Error, Parser.Match.Error>
+    public typealias Failure = Either<Parser_Primitives_Core.Parser.EndOfInput.Error, Parser_Primitives_Core.Parser.Match.Error>
+    public typealias Body = Never
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) {
@@ -58,21 +66,21 @@ extension Parser.Literal: Parser.`Protocol` {
     }
 }
 
-extension Parser.Literal: ExpressibleByStringLiteral {
+extension Byte.Literal.Parser: ExpressibleByStringLiteral {
     @inlinable
     public init(stringLiteral value: String) {
         self.bytes = Swift.Array(value.utf8)
     }
 }
 
-extension Parser.Literal: ExpressibleByUnicodeScalarLiteral {
+extension Byte.Literal.Parser: ExpressibleByUnicodeScalarLiteral {
     @inlinable
     public init(unicodeScalarLiteral value: Unicode.Scalar) {
         self.bytes = Swift.Array(String(value).utf8)
     }
 }
 
-extension Parser.Literal: ExpressibleByExtendedGraphemeClusterLiteral {
+extension Byte.Literal.Parser: ExpressibleByExtendedGraphemeClusterLiteral {
     @inlinable
     public init(extendedGraphemeClusterLiteral value: Character) {
         self.bytes = Swift.Array(String(value).utf8)
@@ -81,7 +89,7 @@ extension Parser.Literal: ExpressibleByExtendedGraphemeClusterLiteral {
 
 // MARK: - Printer Conformance
 
-extension Parser.Literal: Parser.Printer
+extension Byte.Literal.Parser: Parser_Primitives_Core.Parser.Printer
 where Input: RangeReplaceableCollection {
     @inlinable
     public func print(_ output: Void, into input: inout Input) {
