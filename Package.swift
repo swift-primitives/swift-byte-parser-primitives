@@ -26,10 +26,6 @@ let package = Package(
         .package(path: "../swift-byte-primitives"),
         .package(path: "../swift-either-primitives"),
         .package(path: "../swift-input-primitives"),
-        .package(path: "../swift-collection-primitives"),
-        .package(path: "../swift-index-primitives"),
-        .package(path: "../swift-cardinal-primitives"),
-        .package(path: "../swift-sequence-primitives"),
         .package(path: "../swift-array-primitives"),
     ],
     targets: [
