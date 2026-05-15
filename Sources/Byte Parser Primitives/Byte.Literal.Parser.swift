@@ -26,7 +26,7 @@ extension Byte.Literal {
     ///
     /// Requires only `Streaming` capability (no backtracking). Note that on
     /// partial-match failure, input is left partially consumed.
-    public struct Parser<Input: Parser_Primitives_Core.Parser.Input.Streaming>
+    public struct Parser<Input: Input_Primitives.Input.Streaming>
     where Input.Element == UInt8 {
         @usableFromInline
         let bytes: [UInt8]

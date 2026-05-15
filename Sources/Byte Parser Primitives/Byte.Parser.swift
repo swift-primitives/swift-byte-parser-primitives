@@ -25,7 +25,7 @@ extension Byte {
     /// is matched against `UInt8` because the input stream's `Element` is
     /// `UInt8`. The Byte type gives consumers a typed-domain anchor for the
     /// expected value at the call site.
-    public struct Parser<Input: Parser_Primitives_Core.Parser.Input.Streaming>
+    public struct Parser<Input: Input_Primitives.Input.Streaming>
     where Input.Element == UInt8 {
         @usableFromInline
         let expected: Byte

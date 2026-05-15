@@ -13,7 +13,7 @@
 //
 // Input and Parser are PEERS — neither is a sub-domain of the other.
 // They compose via type parameters: `Byte.Parser<Input>` is generic
-// over any `Parser.Input.Streaming` conformer. `Byte.Input` is the
+// over any `Input_Primitives.Input.Streaming` conformer. `Byte.Input` is the
 // canonical concrete choice for byte-array streams.
 
 public import Byte_Primitives
@@ -25,7 +25,7 @@ extension Byte {
     ///
     /// Built on `Input.Slice<Array<UInt8>.Indexed<UInt8>>` — a zero-copy
     /// view over the institute's indexed byte array. Conforms to
-    /// `Input.Streaming` (and the stronger `Input.Protocol` for
+    /// `Input_Primitives.Input.Streaming` (and the stronger `Input.Protocol` for
     /// backtracking-capable parsers) because `Array<UInt8>.Indexed<UInt8>`
     /// is `Collection.\`Protocol\``-conforming and `Copyable`.
     ///
