@@ -30,6 +30,7 @@ let package = Package(
         .package(path: "../swift-index-primitives"),
         .package(path: "../swift-cardinal-primitives"),
         .package(path: "../swift-sequence-primitives"),
+        .package(path: "../swift-array-primitives"),
     ],
     targets: [
         .target(
@@ -38,8 +39,10 @@ let package = Package(
                 .product(name: "Parser Primitives Core", package: "swift-parser-primitives"),
                 .product(name: "Parser Match Primitives", package: "swift-parser-primitives"),
                 .product(name: "Parser EndOfInput Primitives", package: "swift-parser-primitives"),
+                .product(name: "Parser Take Primitives", package: "swift-parser-primitives"),
                 .product(name: "Byte Primitives", package: "swift-byte-primitives"),
                 .product(name: "Either Primitives", package: "swift-either-primitives"),
+                .product(name: "Array Primitives Core", package: "swift-array-primitives"),
             ]
         ),
         .target(
