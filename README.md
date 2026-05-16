@@ -12,10 +12,11 @@ The API takes `Byte_Primitives.Byte` at its surface; the input stream is matched
 
 ```swift
 import Byte_Parser_Primitives
+import Parser_Primitives_Test_Support
 
-let parser = Parser.Byte<ByteInput>(0x41)   // 0x41 inferred as Byte
-var input = ByteInput([0x41, 0x42, 0x43])
-try parser.parse(&input)                     // input now starts at 0x42
+let parser = Parser.Byte<Parser.Test.Input>(0x41)   // 0x41 inferred as Byte
+var input = Parser.Test.Input([0x41, 0x42, 0x43])
+try parser.parse(&input)                            // input now starts at 0x42
 ```
 
 ---
