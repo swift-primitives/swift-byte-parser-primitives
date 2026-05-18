@@ -27,6 +27,8 @@ let package = Package(
         .package(path: "../swift-either-primitives"),
         .package(path: "../swift-input-primitives"),
         .package(path: "../swift-array-primitives"),
+        .package(path: "../swift-cursor-primitives"),
+        .package(url: "https://github.com/swift-primitives/swift-index-primitives.git", branch: "main"),
     ],
     targets: [
         .target(
@@ -41,6 +43,8 @@ let package = Package(
                 .product(name: "Input Primitives", package: "swift-input-primitives"),
                 .product(name: "Array Primitives Core", package: "swift-array-primitives"),
                 .product(name: "Array Dynamic Primitives", package: "swift-array-primitives"),
+                .product(name: "Cursor Primitives Core", package: "swift-cursor-primitives"),
+                .product(name: "Index Primitives", package: "swift-index-primitives"),
             ]
         ),
         .target(

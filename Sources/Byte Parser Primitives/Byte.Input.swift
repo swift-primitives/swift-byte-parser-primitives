@@ -55,4 +55,40 @@ extension Input_Primitives.Input.Slice where Base == Array<UInt8>.Indexed<UInt8>
     public init(utf8 string: Swift.String) {
         self.init(Swift.Array<UInt8>(string.utf8))
     }
+
+    /// Creates an input cursor from any byte collection.
+    ///
+    /// Materializes the collection into a stdlib array before delegating to
+    /// ``init(_:)-(Array<UInt8>)``.
+    ///
+    /// - Parameter bytes: The bytes to parse.
+    @inlinable
+    public init<Bytes: Swift.Collection>(_ bytes: Bytes) where Bytes.Element == UInt8 {
+        self.init(Swift.Array(bytes))
+    }
+
+    /// Creates an input cursor from an array slice.
+    ///
+    /// - Parameter bytes: The byte slice to parse.
+    @inlinable
+    public init(_ bytes: ArraySlice<UInt8>) {
+        self.init(Swift.Array(bytes))
+    }
+
+    /// Checks if the remaining bytes start with the given prefix.
+    ///
+    /// Delegates to ``Input/Access/Random``'s `access.starts(with:)` Property
+    /// view — the canonical prefix-match operation lives on the Random-access
+    /// capability protocol. This wrapper preserves the call-site shape
+    /// `input.starts(with:)`; new call sites SHOULD prefer
+    /// `input.access.starts(with: prefix)` directly.
+    ///
+    /// - Parameter prefix: The prefix to check.
+    /// - Returns: `true` if the remaining bytes start with the prefix.
+    @inlinable
+    public func starts<Prefix: Swift.Collection>(with prefix: Prefix) -> Bool
+    where Prefix.Element == UInt8 {
+        var copy = self
+        return copy.access.starts(with: prefix)
+    }
 }
