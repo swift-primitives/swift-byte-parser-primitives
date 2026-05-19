@@ -10,12 +10,12 @@ extension Cursor where DomainTag == Byte {
     /// This subscript encapsulates the Int conversion at the API boundary,
     /// enabling fully typed interpreter code.
     ///
-    /// - Parameter index: The typed `Index<UInt8>` offset from the current position.
+    /// - Parameter index: The typed `Index<Byte>` offset from the current position.
     /// - Precondition: `index` must be within bounds.
     /// - Returns: The byte at the given offset.
     @inlinable
     @_lifetime(copy self)
-    public subscript(offset index: Index<UInt8>) -> UInt8 {
+    public subscript(offset index: Index<Byte>) -> UInt8 {
         self[offset: Int(bitPattern: index)]
     }
 }
