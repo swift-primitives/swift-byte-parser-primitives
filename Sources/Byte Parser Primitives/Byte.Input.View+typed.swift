@@ -15,7 +15,7 @@ extension Cursor where DomainTag == Byte {
     /// - Returns: The byte at the given offset.
     @inlinable
     @_lifetime(copy self)
-    public subscript(offset index: Index<Byte>) -> UInt8 {
-        self[offset: Int(bitPattern: index)]
+    public subscript(offset index: Index<Byte>) -> Byte {
+        Byte(self[offset: Int(bitPattern: index)])
     }
 }
