@@ -49,7 +49,7 @@ extension Cursor where DomainTag == Byte {
 
     /// The first byte, or `nil` if empty.
     @inlinable
-    public var first: UInt8? { peek() }
+    public var first: Byte? { peek() }
 
     /// The number of bytes consumed since construction (canonical measure).
     @inlinable
@@ -62,7 +62,7 @@ extension Cursor where DomainTag == Byte {
     @inlinable
     @discardableResult
     @_lifetime(self: copy self)
-    public mutating func removeFirst() -> UInt8 {
+    public mutating func removeFirst() -> Byte {
         consume()
     }
 
@@ -84,7 +84,7 @@ extension Cursor where DomainTag == Byte {
     /// - Returns: The byte at the given offset.
     @inlinable
     @_lifetime(copy self)
-    public subscript(offset offset: Int) -> UInt8 {
+    public subscript(offset offset: Int) -> Byte {
         precondition(offset >= 0, "subscript offset must be non-negative")
         let typedOffset = Tagged<Byte, Cardinal>(_unchecked: Cardinal(UInt(bitPattern: offset)))
         guard let byte = peek(at: typedOffset) else {
@@ -103,7 +103,7 @@ extension Cursor where DomainTag == Byte {
         var i: Int = 0
         for byte in prefix {
             let typedOffset = Tagged<Byte, Cardinal>(_unchecked: Cardinal(UInt(bitPattern: i)))
-            guard let observed = peek(at: typedOffset), observed == byte else { return false }
+            guard let observed = peek(at: typedOffset), observed.underlying == byte else { return false }
             i += 1
         }
         return true
@@ -127,7 +127,7 @@ extension Cursor where DomainTag == Byte {
         while i < remaining {
             let typedOffset = Tagged<Byte, Cardinal>(_unchecked: Cardinal(UInt(bitPattern: i)))
             if let b = peek(at: typedOffset) {
-                bytes.append(b)
+                bytes.append(b.underlying)
             }
             i += 1
         }
