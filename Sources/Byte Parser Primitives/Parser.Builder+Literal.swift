@@ -5,7 +5,7 @@
 // declarative parser bodies.
 //
 // String literals infer as `Byte.Literal.Parser` (the byte-domain parser
-// for literal byte sequences); byte-array literals stay as `[UInt8]`. The
+// for literal byte sequences); byte-array literals are `[Byte]`. The
 // overloads bridge SwiftPM Result Builder's spec-mirroring naming
 // (`buildExpression` — exempt per [API-NAME-002] spec-mirroring) into the
 // byte-domain types.
@@ -76,5 +76,21 @@ where Input: Input_Primitives.Input.Streaming, Input.Element == Byte {
         _ parser: P
     ) -> P where P.Input == Input {
         parser
+    }
+}
+
+// MARK: - Parser.Take.Builder Byte Array Literal Support
+
+extension Parser_Primitives_Core.Parser.Take.Builder where Input == ArraySlice<Byte> {
+    /// Converts a `[Byte]` array literal to a parser.
+    ///
+    /// This enables using byte arrays directly in `Parser.Take.Sequence`
+    /// builders. Relocated from `swift-parser-primitives` 2026-05-19 as
+    /// part of the L1 byte-domain cleanup (Tier B); follows the Wave 3
+    /// byte-extraction pattern that placed byte-specific buildExpression
+    /// overloads in the byte-aware target.
+    @inlinable
+    public static func buildExpression(_ bytes: [Byte]) -> [Byte] {
+        bytes
     }
 }
