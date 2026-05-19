@@ -23,10 +23,10 @@ public import Array_Dynamic_Primitives
 extension Byte {
     /// The canonical byte-stream input for byte-domain parsers.
     ///
-    /// Built on `Input.Slice<Array<UInt8>.Indexed<UInt8>>` — a zero-copy
+    /// Built on `Input.Slice<Array<Byte>.Indexed<Byte>>` — a zero-copy
     /// view over the institute's indexed byte array. Conforms to
     /// `Input_Primitives.Input.Streaming` (and the stronger `Input.Protocol` for
-    /// backtracking-capable parsers) because `Array<UInt8>.Indexed<UInt8>`
+    /// backtracking-capable parsers) because `Array<Byte>.Indexed<Byte>`
     /// is `Collection.\`Protocol\``-conforming and `Copyable`.
     ///
     /// ```swift
@@ -34,20 +34,20 @@ extension Byte {
     /// try Byte.Parser<Byte.Input>(0x48).parse(&input)
     /// // input now cursors past 0x48 to 0x65
     /// ```
-    public typealias Input = Input_Primitives.Input.Slice<Array<UInt8>.Indexed<UInt8>>
+    public typealias Input = Input_Primitives.Input.Slice<Array<Byte>.Indexed<Byte>>
 }
 
 // MARK: - Convenience initializers on Byte.Input
 
-extension Input_Primitives.Input.Slice where Base == Array<UInt8>.Indexed<UInt8> {
+extension Input_Primitives.Input.Slice where Base == Array<Byte>.Indexed<Byte> {
     /// Creates a byte-stream input from a stdlib `[UInt8]`.
     @inlinable
     public init(_ bytes: Swift.Array<UInt8>) {
-        var storage = Array<UInt8>()
+        var storage = Array<Byte>()
         for byte in bytes {
-            storage.append(byte)
+            storage.append(Byte(byte))
         }
-        self = Input.Slice(Array<UInt8>.Indexed<UInt8>(storage))
+        self = Input.Slice(Array<Byte>.Indexed<Byte>(storage))
     }
 
     /// Creates a byte-stream input from a string's UTF-8 representation.
@@ -87,7 +87,7 @@ extension Input_Primitives.Input.Slice where Base == Array<UInt8>.Indexed<UInt8>
     /// - Returns: `true` if the remaining bytes start with the prefix.
     @inlinable
     public func starts<Prefix: Swift.Collection>(with prefix: Prefix) -> Bool
-    where Prefix.Element == UInt8 {
+    where Prefix.Element == Byte {
         var copy = self
         return copy.access.starts(with: prefix)
     }

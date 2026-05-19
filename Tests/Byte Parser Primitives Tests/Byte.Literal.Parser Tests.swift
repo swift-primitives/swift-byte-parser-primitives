@@ -31,7 +31,7 @@ extension `Byte.Literal.Parser Tests`.Unit {
 
         try parser.parse(&input)
 
-        #expect(input.first == UInt8(ascii: "!"))
+        #expect(input.first == Byte(UInt8(ascii: "!")))
     }
 
     @Test

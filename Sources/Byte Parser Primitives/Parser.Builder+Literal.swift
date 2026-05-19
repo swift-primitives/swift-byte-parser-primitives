@@ -17,7 +17,7 @@ public import Parser_Take_Primitives
 // MARK: - Parser.Builder String Literal Support
 
 extension Parser_Primitives_Core.Parser.Builder
-where Input: Input_Primitives.Input.Streaming, Input.Element == UInt8 {
+where Input: Input_Primitives.Input.Streaming, Input.Element == Byte {
     /// Enables bare string literals as `Byte.Literal.Parser` in `var body`
     /// builders.
     @inlinable
@@ -49,7 +49,7 @@ extension Parser_Primitives_Core.Parser.Builder where Input == ArraySlice<UInt8>
 // MARK: - Parser.Take.Builder String Literal Support
 
 extension Parser_Primitives_Core.Parser.Take.Builder
-where Input: Input_Primitives.Input.Streaming, Input.Element == UInt8 {
+where Input: Input_Primitives.Input.Streaming, Input.Element == Byte {
     /// Enables bare string literals as `Byte.Literal.Parser` in builder bodies.
     ///
     /// ```swift

@@ -6,7 +6,7 @@
 @_exported public import Parser_Match_Primitives
 @_exported public import Either_Primitives
 // Re-export the modules whose types form Byte.Input's underlying shape
-// (Input.Slice<Array<UInt8>.Indexed<UInt8>>). Consumers of Byte.Input
+// (Input.Slice<Array<Byte>.Indexed<Byte>>). Consumers of Byte.Input
 // require these for member-import visibility of Input.Protocol /
 // Collection.Protocol conformances on the underlying Input.Slice /
 // Array.Indexed.

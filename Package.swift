@@ -39,6 +39,7 @@ let package = Package(
                 .product(name: "Parser EndOfInput Primitives", package: "swift-parser-primitives"),
                 .product(name: "Parser Take Primitives", package: "swift-parser-primitives"),
                 .product(name: "Byte Primitives", package: "swift-byte-primitives"),
+                .product(name: "Byte Primitives Standard Library Integration", package: "swift-byte-primitives"),
                 .product(name: "Either Primitives", package: "swift-either-primitives"),
                 .product(name: "Input Primitives", package: "swift-input-primitives"),
                 .product(name: "Array Primitives Core", package: "swift-array-primitives"),

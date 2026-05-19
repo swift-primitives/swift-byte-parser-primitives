@@ -27,22 +27,30 @@ extension Byte.Literal {
     /// Requires only `Streaming` capability (no backtracking). Note that on
     /// partial-match failure, input is left partially consumed.
     public struct Parser<Input: Input_Primitives.Input.Streaming>
-    where Input.Element == UInt8 {
+    where Input.Element == Byte {
         @usableFromInline
-        let bytes: [UInt8]
+        let bytes: [Byte]
 
         @inlinable
         public init(_ bytes: [UInt8]) {
-            self.bytes = bytes
+            var typed: [Byte] = []
+            typed.reserveCapacity(bytes.count)
+            for byte in bytes { typed.append(Byte(byte)) }
+            self.bytes = typed
         }
 
         @inlinable
         public init(_ string: StaticString) {
-            unsafe (self.bytes = Swift.Array(
-                string.utf8Start.withMemoryRebound(to: UInt8.self, capacity: string.utf8CodeUnitCount) {
-                    UnsafeBufferPointer(start: $0, count: string.utf8CodeUnitCount)
-                }
-            ))
+            unsafe (self.bytes = string.utf8Start.withMemoryRebound(
+                to: UInt8.self,
+                capacity: string.utf8CodeUnitCount
+            ) { ptr in
+                let buf = UnsafeBufferPointer(start: ptr, count: string.utf8CodeUnitCount)
+                var typed: [Byte] = []
+                typed.reserveCapacity(buf.count)
+                for byte in buf { typed.append(Byte(byte)) }
+                return typed
+            })
         }
     }
 }
@@ -56,11 +64,11 @@ extension Byte.Literal.Parser: Parser_Primitives_Core.Parser.`Protocol` {
     public func parse(_ input: inout Input) throws(Failure) {
         for expected in bytes {
             guard !input.isEmpty else {
-                throw .left(.unexpected(expected: "byte 0x\(String(expected, radix: 16, uppercase: true))"))
+                throw .left(.unexpected(expected: "byte 0x\(String(expected.underlying, radix: 16, uppercase: true))"))
             }
             let actual = try! input.advance()
             guard actual == expected else {
-                throw .right(.byteMismatch(expected: [expected], found: [actual]))
+                throw .right(.byteMismatch(expected: [expected.underlying], found: [actual.underlying]))
             }
         }
     }
@@ -69,21 +77,27 @@ extension Byte.Literal.Parser: Parser_Primitives_Core.Parser.`Protocol` {
 extension Byte.Literal.Parser: ExpressibleByStringLiteral {
     @inlinable
     public init(stringLiteral value: String) {
-        self.bytes = Swift.Array(value.utf8)
+        var typed: [Byte] = []
+        for byte in value.utf8 { typed.append(Byte(byte)) }
+        self.bytes = typed
     }
 }
 
 extension Byte.Literal.Parser: ExpressibleByUnicodeScalarLiteral {
     @inlinable
     public init(unicodeScalarLiteral value: Unicode.Scalar) {
-        self.bytes = Swift.Array(String(value).utf8)
+        var typed: [Byte] = []
+        for byte in String(value).utf8 { typed.append(Byte(byte)) }
+        self.bytes = typed
     }
 }
 
 extension Byte.Literal.Parser: ExpressibleByExtendedGraphemeClusterLiteral {
     @inlinable
     public init(extendedGraphemeClusterLiteral value: Character) {
-        self.bytes = Swift.Array(String(value).utf8)
+        var typed: [Byte] = []
+        for byte in String(value).utf8 { typed.append(Byte(byte)) }
+        self.bytes = typed
     }
 }
 
