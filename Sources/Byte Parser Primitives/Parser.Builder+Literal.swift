@@ -38,10 +38,10 @@ where Input: Input_Primitives.Input.Streaming, Input.Element == Byte {
 
 // MARK: - Parser.Builder Byte Array Literal Support
 
-extension Parser_Primitives_Core.Parser.Builder where Input == ArraySlice<UInt8> {
-    /// Converts a `[UInt8]` array literal to a parser.
+extension Parser_Primitives_Core.Parser.Builder where Input == ArraySlice<Byte> {
+    /// Converts a `[Byte]` array literal to a parser.
     @inlinable
-    public static func buildExpression(_ bytes: [UInt8]) -> [UInt8] {
+    public static func buildExpression(_ bytes: [Byte]) -> [Byte] {
         bytes
     }
 }

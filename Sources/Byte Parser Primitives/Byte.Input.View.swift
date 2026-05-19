@@ -98,12 +98,11 @@ extension Cursor where DomainTag == Byte {
     /// - Parameter prefix: The prefix to check.
     /// - Returns: `true` if the remaining bytes start with the prefix.
     @inlinable
-    public func starts<Prefix: Swift.Collection>(with prefix: Prefix) -> Bool
-    where Prefix.Element == UInt8 {
+    public func starts(with prefix: some Swift.Sequence<some Byte.`Protocol`>) -> Bool {
         var i: Int = 0
         for byte in prefix {
             let typedOffset = Tagged<Byte, Cardinal>(_unchecked: Cardinal(UInt(bitPattern: i)))
-            guard let observed = peek(at: typedOffset), observed.underlying == byte else { return false }
+            guard let observed = peek(at: typedOffset), observed == byte.byte else { return false }
             i += 1
         }
         return true
@@ -121,16 +120,16 @@ extension Cursor where DomainTag == Byte {
     @inlinable
     public func copyToOwned() -> Byte.Input {
         let remaining = Int(bitPattern: count)
-        var bytes: [UInt8] = []
+        var bytes: [Byte] = []
         bytes.reserveCapacity(remaining)
         var i: Int = 0
         while i < remaining {
             let typedOffset = Tagged<Byte, Cardinal>(_unchecked: Cardinal(UInt(bitPattern: i)))
             if let b = peek(at: typedOffset) {
-                bytes.append(b.underlying)
+                bytes.append(b)
             }
             i += 1
         }
-        return Byte.Input(bytes)
+        return Byte.Input(bytes.map(\.underlying))
     }
 }
