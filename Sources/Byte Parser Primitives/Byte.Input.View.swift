@@ -28,7 +28,7 @@ extension Byte.Input {
     /// `binary-bytes-input-removal` arc (successor to the
     /// `typed-input-unification` arc). The byte-domain owned-input identity
     /// (`Byte.Input`) is the canonical home; this typealias formerly lived
-    /// under the older `Binary.Bytes.Input.View` shape with the same
+    /// under an older binary-byte sub-namespace shape with the same
     /// underlying instantiation.
     public typealias View = Cursor<Byte>
 }
