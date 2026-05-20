@@ -40,7 +40,30 @@ extension Byte {
 // MARK: - Convenience initializers on Byte.Input
 
 extension Input_Primitives.Input.Slice where Base == Array<Byte>.Indexed<Byte> {
+    /// Creates a byte-stream input from `[Byte]`.
+    @inlinable
+    public init(_ bytes: Swift.Array<Byte>) {
+        var storage = Array<Byte>()
+        for byte in bytes {
+            storage.append(byte)
+        }
+        self = Input.Slice(Array<Byte>.Indexed<Byte>(storage))
+    }
+
+    /// Creates an input cursor from any byte collection.
+    ///
+    /// - Parameter bytes: The bytes to parse.
+    @inlinable
+    public init<Bytes: Swift.Collection>(_ bytes: Bytes) where Bytes.Element == Byte {
+        self.init(Swift.Array(bytes))
+    }
+
     /// Creates a byte-stream input from a stdlib `[UInt8]`.
+    ///
+    /// Stdlib-interop forwarder per [API-BYTE-006] — carries
+    /// `@_disfavoredOverload` so the `[Byte]` primary wins when both forms
+    /// satisfy the call site.
+    @_disfavoredOverload
     @inlinable
     public init(_ bytes: Swift.Array<UInt8>) {
         var storage = Array<Byte>()
@@ -56,20 +79,19 @@ extension Input_Primitives.Input.Slice where Base == Array<Byte>.Indexed<Byte> {
         self.init(Swift.Array<UInt8>(string.utf8))
     }
 
-    /// Creates an input cursor from any byte collection.
+    /// Creates an input cursor from any UInt8 collection.
     ///
-    /// Materializes the collection into a stdlib array before delegating to
-    /// ``init(_:)-(Array<UInt8>)``.
-    ///
-    /// - Parameter bytes: The bytes to parse.
+    /// Stdlib-interop forwarder per [API-BYTE-006].
+    @_disfavoredOverload
     @inlinable
     public init<Bytes: Swift.Collection>(_ bytes: Bytes) where Bytes.Element == UInt8 {
         self.init(Swift.Array(bytes))
     }
 
-    /// Creates an input cursor from an array slice.
+    /// Creates an input cursor from a UInt8 array slice.
     ///
-    /// - Parameter bytes: The byte slice to parse.
+    /// Stdlib-interop forwarder per [API-BYTE-006].
+    @_disfavoredOverload
     @inlinable
     public init(_ bytes: ArraySlice<UInt8>) {
         self.init(Swift.Array(bytes))
