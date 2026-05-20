@@ -32,11 +32,8 @@ extension Byte.Literal {
         let bytes: [Byte]
 
         @inlinable
-        public init(_ bytes: [UInt8]) {
-            var typed: [Byte] = []
-            typed.reserveCapacity(bytes.count)
-            for byte in bytes { typed.append(Byte(byte)) }
-            self.bytes = typed
+        public init(_ bytes: [Byte]) {
+            self.bytes = bytes
         }
 
         @inlinable

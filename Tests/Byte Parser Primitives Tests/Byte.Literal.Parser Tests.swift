@@ -96,7 +96,7 @@ extension `Byte.Literal.Parser Tests`.Integration {
 
     @Test
     func `parses long literal`() throws(Byte.Literal.Parser<Byte.Input>.Failure) {
-        let bytes = Swift.Array(repeating: UInt8(0x61), count: 1024)
+        let bytes = Swift.Array(repeating: Byte(0x61), count: 1024)
         let parser = Byte.Literal.Parser<Byte.Input>(bytes)
         var input = Byte.Input(bytes)
 
