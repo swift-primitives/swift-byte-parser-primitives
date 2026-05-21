@@ -54,6 +54,7 @@ let package = Package(
                 "Byte Parser Primitives",
                 .product(name: "Byte Primitives Test Support", package: "swift-byte-primitives"),
                 .product(name: "Input Primitives", package: "swift-input-primitives"),
+                .product(name: "Index Primitives Test Support", package: "swift-index-primitives"),
             ],
             path: "Tests/Support"
         ),
