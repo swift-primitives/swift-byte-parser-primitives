@@ -2,136 +2,143 @@ import Byte_Parser_Primitives_Test_Support
 import Testing
 
 // MARK: - Byte.Input.View Tests
-
-// Note: Input.View is ~Copyable and ~Escapable, so tests must extract values
-// before using #expect since the macro doesn't support these types.
+//
+// Byte.Input.View is `Cursor<Byte>` (per the typealias in Byte.Input.View.swift).
+// Cursor-native API (peek/consume/advance/position/isAtEnd) is exercised by
+// swift-cursor-primitives' own test suite; this file tests the byte-domain
+// surface that lives ONLY in byte-parser-primitives:
+//
+//   • `starts(with:)`              — typed-prefix match against a Byte sequence
+//   • `copyToOwned() -> Byte.Input` — borrowed → owned conversion
+//   • `subscript[offset: Index<Byte>]` — typed-Index byte access
+//
+// Plus one integration test exercising the byte parser pattern (Cursor<Byte>
+// consumed for a fixed-width-integer parse) to confirm the substrate works
+// end-to-end at the byte-parser-primitives layer.
+//
+// Note: Byte.Input.View is ~Copyable and ~Escapable, so tests must extract
+// values before using #expect since the macro doesn't support these types.
 
 @Suite("Byte.Input.View")
-struct BinaryBytesInputViewTests {
-    @Suite struct Unit {}
-    @Suite struct EdgeCase {}
+struct ByteInputViewTests {
+    @Suite struct `Starts With` {}
+    @Suite struct `Copy To Owned` {}
+    @Suite struct `Typed Subscript` {}
     @Suite struct Integration {}
 }
 
-// MARK: - Unit Tests
+// MARK: - starts(with:)
 
-extension BinaryBytesInputViewTests.Unit {
+extension ByteInputViewTests.`Starts With` {
 
     @Test
-    func `count returns correct value`() {
-        let bytes: [Byte] = [0x01, 0x02, 0x03, 0x04, 0x05]
+    func `returns true for matching prefix`() {
+        let bytes: [Byte] = [0x01, 0x02, 0x03, 0x04]
 
-        let count = bytes.withUnsafeBufferPointer { buffer in
+        let result = bytes.withUnsafeBufferPointer { buffer in
             let span = Span(_unsafeElements: buffer)
             let view = Byte.Input.View(span)
-            return view.count
+            return view.starts(with: [0x01, 0x02] as [Byte])
         }
 
-        #expect(count == 5)
+        #expect(result)
     }
 
     @Test
-    func `isEmpty returns false for non-empty view`() {
+    func `returns false for non-matching prefix`() {
         let bytes: [Byte] = [0x01, 0x02, 0x03]
 
-        let isEmpty = bytes.withUnsafeBufferPointer { buffer in
+        let result = bytes.withUnsafeBufferPointer { buffer in
             let span = Span(_unsafeElements: buffer)
             let view = Byte.Input.View(span)
-            return view.isEmpty
+            return view.starts(with: [0x01, 0x03] as [Byte])
         }
 
-        #expect(!isEmpty)
+        #expect(!result)
     }
 
     @Test
-    func `first returns first byte`() {
-        let bytes: [Byte] = [0xAB, 0xCD, 0xEF]
+    func `returns true for empty prefix on any view`() {
+        let bytes: [Byte] = [0x01, 0x02]
 
-        let first = bytes.withUnsafeBufferPointer { buffer in
+        let result = bytes.withUnsafeBufferPointer { buffer in
             let span = Span(_unsafeElements: buffer)
             let view = Byte.Input.View(span)
-            return view.first
+            return view.starts(with: [] as [Byte])
         }
 
-        #expect(first == 0xAB)
+        #expect(result)
     }
 
     @Test
-    func `consumed starts at zero`() {
-        let bytes: [Byte] = [0x01, 0x02, 0x03]
+    func `returns false when prefix exceeds remaining`() {
+        let bytes: [Byte] = [0x01]
 
-        let consumed = bytes.withUnsafeBufferPointer { buffer in
+        let result = bytes.withUnsafeBufferPointer { buffer in
             let span = Span(_unsafeElements: buffer)
             let view = Byte.Input.View(span)
-            return view.consumedCount
+            return view.starts(with: [0x01, 0x02] as [Byte])
         }
 
-        #expect(consumed == 0)
+        #expect(!result)
     }
+}
+
+// MARK: - copyToOwned()
+
+extension ByteInputViewTests.`Copy To Owned` {
 
     @Test
-    func `removeFirst removes and returns first byte`() {
-        let bytes: [Byte] = [0x41, 0x42, 0x43]
+    func `creates independent owned input from fresh view`() {
+        let bytes: [Byte] = [0x01, 0x02, 0x03, 0x04]
 
-        let (byte, count, first) = bytes.withUnsafeBufferPointer { buffer in
+        let (ownedCount, ownedFirst) = bytes.withUnsafeBufferPointer { buffer in
             let span = Span(_unsafeElements: buffer)
-            var view = Byte.Input.View(span)
-            let byte = view.removeFirst()
-            return (byte, view.count, view.first)
+            let view = Byte.Input.View(span)
+            let owned = view.copyToOwned()
+            return (owned.count, owned.first)
         }
 
-        #expect(byte == 0x41)
-        #expect(count == 2)
-        #expect(first == 0x42)
+        #expect(ownedCount == 4)
+        #expect(ownedFirst == 0x01)
     }
 
     @Test
-    func `removeFirst updates consumed`() {
-        let bytes: [Byte] = [0x01, 0x02, 0x03]
+    func `copies only the remaining bytes after partial consumption`() {
+        let bytes: [Byte] = [0x01, 0x02, 0x03, 0x04]
 
-        let (consumed1, consumed2) = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
-            var view = Byte.Input.View(span)
-
-            _ = view.removeFirst()
-            let c1 = view.consumedCount
-
-            _ = view.removeFirst()
-            let c2 = view.consumedCount
-
-            return (c1, c2)
-        }
-
-        #expect(consumed1 == 1)
-        #expect(consumed2 == 2)
-    }
-
-    @Test
-    func `removeFirst n removes multiple bytes`() {
-        let bytes: [Byte] = [0x01, 0x02, 0x03, 0x04, 0x05]
-
-        let (count, first, consumed) = bytes.withUnsafeBufferPointer { buffer in
+        let (ownedCount, ownedFirst) = bytes.withUnsafeBufferPointer { buffer in
             let span = Span(_unsafeElements: buffer)
             var view = Byte.Input.View(span)
 
-            view.removeFirst(3)
+            _ = view.consume()
+            let owned = view.copyToOwned()
 
-            return (view.count, view.first, view.consumedCount)
+            return (owned.count, owned.first)
         }
 
-        #expect(count == 2)
-        #expect(first == 0x04)
-        #expect(consumed == 3)
+        #expect(ownedCount == 3)
+        #expect(ownedFirst == 0x02)
     }
+}
+
+// MARK: - subscript[offset: Index<Byte>]
+
+extension ByteInputViewTests.`Typed Subscript` {
 
     @Test
-    func `subscript accesses byte at offset`() {
+    func `accesses byte at typed offset`() {
         let bytes: [Byte] = [0x10, 0x20, 0x30, 0x40]
 
         let (b0, b1, b2, b3) = bytes.withUnsafeBufferPointer { buffer in
             let span = Span(_unsafeElements: buffer)
             let view = Byte.Input.View(span)
-            return (view[offset: 0], view[offset: 1], view[offset: 2], view[offset: 3])
+            return (
+                view[offset: .zero],
+                view[offset: try! Index<Byte>(1)],
+                view[offset: try! Index<Byte>(2)],
+                view[offset: try! Index<Byte>(3)]
+            )
         }
 
         #expect(b0 == 0x10)
@@ -141,160 +148,39 @@ extension BinaryBytesInputViewTests.Unit {
     }
 
     @Test
-    func `subscript respects consumed bytes`() {
+    func `respects current cursor position after consumption`() {
         let bytes: [Byte] = [0x10, 0x20, 0x30, 0x40]
 
         let (b0, b1) = bytes.withUnsafeBufferPointer { buffer in
             let span = Span(_unsafeElements: buffer)
             var view = Byte.Input.View(span)
 
-            _ = view.removeFirst()
+            _ = view.consume()
 
-            return (view[offset: 0], view[offset: 1])
+            return (view[offset: .zero], view[offset: try! Index<Byte>(1)])
         }
 
         #expect(b0 == 0x20)
         #expect(b1 == 0x30)
     }
-
-    @Test
-    func `starts with returns true for matching prefix`() {
-        let bytes: [Byte] = [0x01, 0x02, 0x03, 0x04]
-
-        let startsWith = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
-            let view = Byte.Input.View(span)
-            return view.starts(with: [0x01, 0x02] as [Byte])
-        }
-
-        #expect(startsWith)
-    }
-
-    @Test
-    func `starts with returns false for non-matching prefix`() {
-        let bytes: [Byte] = [0x01, 0x02, 0x03]
-
-        let startsWith = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
-            let view = Byte.Input.View(span)
-            return view.starts(with: [0x01, 0x03] as [Byte])
-        }
-
-        #expect(!startsWith)
-    }
 }
 
-// MARK: - EdgeCase Tests
+// MARK: - Integration
 
-extension BinaryBytesInputViewTests.EdgeCase {
-
-    @Test
-    func `empty view has count zero`() {
-        let bytes: [Byte] = []
-
-        let (count, isEmpty, first) = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
-            let view = Byte.Input.View(span)
-            return (view.count, view.isEmpty, view.first)
-        }
-
-        #expect(count == 0)
-        #expect(isEmpty)
-        #expect(first == nil)
-    }
-
-    @Test
-    func `consuming all bytes makes view empty`() {
-        let bytes: [Byte] = [0x01, 0x02, 0x03]
-
-        let (isEmpty, first, consumed) = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
-            var view = Byte.Input.View(span)
-
-            view.removeFirst(3)
-
-            return (view.isEmpty, view.first, view.consumedCount)
-        }
-
-        #expect(isEmpty)
-        #expect(first == nil)
-        #expect(consumed == 3)
-    }
-
-    @Test
-    func `removeFirst zero is no-op`() {
-        let bytes: [Byte] = [0x01, 0x02]
-
-        let (count, consumed) = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
-            var view = Byte.Input.View(span)
-
-            view.removeFirst(0)
-
-            return (view.count, view.consumedCount)
-        }
-
-        #expect(count == 2)
-        #expect(consumed == 0)
-    }
-}
-
-// MARK: - Integration Tests
-
-extension BinaryBytesInputViewTests.Integration {
-
-    @Test
-    func `copyToOwned creates independent input`() {
-        let bytes: [Byte] = [0x01, 0x02, 0x03, 0x04]
-
-        let (ownedCount, ownedFirst) = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
-            var view = Byte.Input.View(span)
-
-            _ = view.removeFirst()
-            let owned = view.copyToOwned()
-
-            return (owned.count, owned.first)
-        }
-
-        #expect(ownedCount == 3)
-        #expect(ownedFirst == 0x02)
-    }
-
-    @Test
-    func `sequential byte consumption works`() {
-        let bytes: [Byte] = [0x01, 0x02, 0x03, 0x04]
-
-        let (first, second, third, consumed, count) = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
-            var view = Byte.Input.View(span)
-
-            let first = view.removeFirst()
-            let second = view.removeFirst()
-            let third = view.removeFirst()
-
-            return (first, second, third, view.consumedCount, view.count)
-        }
-
-        #expect(first == 0x01)
-        #expect(second == 0x02)
-        #expect(third == 0x03)
-        #expect(consumed == 3)
-        #expect(count == 1)
-    }
+extension ByteInputViewTests.Integration {
 
     @Test
     func `parse fixed-width integer from view`() {
         let bytes: [Byte] = [0xDE, 0xAD, 0xBE, 0xEF]
 
-        let (value, isEmpty) = bytes.withUnsafeBufferPointer { buffer in
+        let (value, isAtEnd) = bytes.withUnsafeBufferPointer { buffer in
             let span = Span(_unsafeElements: buffer)
             var view = Byte.Input.View(span)
 
-            let b0 = view.removeFirst().underlying
-            let b1 = view.removeFirst().underlying
-            let b2 = view.removeFirst().underlying
-            let b3 = view.removeFirst().underlying
+            let b0 = view.consume().underlying
+            let b1 = view.consume().underlying
+            let b2 = view.consume().underlying
+            let b3 = view.consume().underlying
 
             let value =
                 UInt32(b0) << 24
@@ -302,10 +188,10 @@ extension BinaryBytesInputViewTests.Integration {
                 | UInt32(b2) << 8
                 | UInt32(b3)
 
-            return (value, view.isEmpty)
+            return (value, view.isAtEnd)
         }
 
         #expect(value == 0xDEAD_BEEF)
-        #expect(isEmpty)
+        #expect(isAtEnd)
     }
 }

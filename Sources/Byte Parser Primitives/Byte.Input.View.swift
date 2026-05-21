@@ -35,75 +35,31 @@ extension Byte.Input {
 
 // MARK: - Byte-domain public API
 //
-// The institute's borrowed-bytes view ships a domain-specific public API
-// (`isEmpty`, `first`, `removeFirst`, `removeFirst(_:)`, `subscript[offset:]`,
-// `consumedCount`). The unified Cursor<Byte> substrate uses cursor-style
-// names (`isAtEnd`, `peek`, `consume`, `advance`, `peek(at:)`). These
-// extensions preserve the byte-domain API on the typealiased identity so
-// existing call sites continue to compile.
+// The trivial-alias wrappers (`isEmpty`, `first`, `consumedCount`,
+// `removeFirst()`, `removeFirst(_:Int)`, `subscript(offset:Int)`) were
+// removed 2026-05-21 per the byte-input-view-primitives arc Pass 2.
+// Consumers now call Cursor's native API directly:
+//   • `view.isAtEnd`                         (was `view.isEmpty`)
+//   • `view.peek()`                          (was `view.first`)
+//   • `Int(bitPattern: view.position)`       (was `view.consumedCount`)
+//   • `view.consume()`                       (was `view.removeFirst()`)
+//   • `view.advance(by: Tagged<Byte, Cardinal>)` (was `view.removeFirst(_:Int)`)
+//   • `view.peek(at: typedCount)`            (was `view[offset: Int]`)
+// The byte-domain typed-Index subscript (`view[offset: Index<Byte>]`) is
+// retained in `Byte.Input.View+typed.swift`; it encapsulates the Ordinal
+// → Cardinal conversion at the API boundary.
 
 extension Cursor where DomainTag == Byte {
-    /// Whether there are no more bytes to parse.
-    @inlinable
-    public var isEmpty: Bool { isAtEnd }
-
-    /// The first byte, or `nil` if empty.
-    @inlinable
-    public var first: Byte? { peek() }
-
-    /// The number of bytes consumed since construction (canonical measure).
-    @inlinable
-    public var consumedCount: Int { Int(bitPattern: position) }
-
-    /// Removes and returns the first byte.
-    ///
-    /// - Precondition: The view must not be empty.
-    /// - Returns: The first byte.
-    @inlinable
-    @discardableResult
-    @_lifetime(self: copy self)
-    public mutating func removeFirst() -> Byte {
-        consume()
-    }
-
-    /// Removes the first `n` bytes.
-    ///
-    /// - Parameter n: The number of bytes to remove.
-    /// - Precondition: `n >= 0` and `n <= count`.
-    @inlinable
-    @_lifetime(self: copy self)
-    public mutating func removeFirst(_ n: Int) {
-        precondition(n >= 0, "removeFirst(_:) requires non-negative count")
-        advance(by: Tagged<Byte, Cardinal>(_unchecked: Cardinal(UInt(bitPattern: n))))
-    }
-
-    /// Accesses the byte at the given offset from the current position.
-    ///
-    /// - Parameter offset: The offset from the current position (0-indexed).
-    /// - Precondition: `offset >= 0` and `offset < count`.
-    /// - Returns: The byte at the given offset.
-    @inlinable
-    @_lifetime(copy self)
-    public subscript(offset offset: Int) -> Byte {
-        precondition(offset >= 0, "subscript offset must be non-negative")
-        let typedOffset = Tagged<Byte, Cardinal>(_unchecked: Cardinal(UInt(bitPattern: offset)))
-        guard let byte = peek(at: typedOffset) else {
-            preconditionFailure("subscript offset out of bounds")
-        }
-        return byte
-    }
-
     /// Checks if the remaining bytes start with the given prefix.
     ///
     /// - Parameter prefix: The prefix to check.
     /// - Returns: `true` if the remaining bytes start with the prefix.
     @inlinable
     public func starts(with prefix: some Swift.Sequence<some Byte.`Protocol`>) -> Bool {
-        var i: Int = 0
+        var offset: Tagged<Byte, Cardinal> = .zero
         for byte in prefix {
-            let typedOffset = Tagged<Byte, Cardinal>(_unchecked: Cardinal(UInt(bitPattern: i)))
-            guard let observed = peek(at: typedOffset), observed == byte.byte else { return false }
-            i += 1
+            guard let observed = peek(at: offset), observed == byte.byte else { return false }
+            offset += .one
         }
         return true
     }
