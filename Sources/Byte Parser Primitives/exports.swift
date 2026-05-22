@@ -16,4 +16,6 @@
 // (the institute's borrowed-bytes cursor — substrate for byte parsing)
 // get the substrate types in scope without an extra import.
 @_exported public import Cursor_Primitives
+@_exported public import Byte_Cursor_Primitives
+@_exported public import Memory_Cursor_Primitives
 @_exported public import Index_Primitives
