@@ -1,5 +1,5 @@
 public import Byte_Primitives
-public import Cursor_Primitives_Core
+public import Cursor_Primitives
 
 // MARK: - Cursor<Byte> — byte-domain extensions
 //

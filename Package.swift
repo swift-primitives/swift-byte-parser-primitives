@@ -44,7 +44,7 @@ let package = Package(
                 .product(name: "Input Primitives", package: "swift-input-primitives"),
                 .product(name: "Array Primitives Core", package: "swift-array-primitives"),
                 .product(name: "Array Dynamic Primitives", package: "swift-array-primitives"),
-                .product(name: "Cursor Primitives Core", package: "swift-cursor-primitives"),
+                .product(name: "Cursor Primitives", package: "swift-cursor-primitives"),
                 .product(name: "Index Primitives", package: "swift-index-primitives"),
             ]
         ),
