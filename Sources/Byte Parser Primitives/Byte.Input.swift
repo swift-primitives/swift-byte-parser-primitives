@@ -18,7 +18,7 @@
 
 public import Byte_Primitives
 public import Input_Primitives
-public import Array_Dynamic_Primitives
+public import Array_Primitives
 
 extension Byte {
     /// The canonical byte-stream input for byte-domain parsers.

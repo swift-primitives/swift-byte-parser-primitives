@@ -10,7 +10,7 @@ public import Parser_Primitives_Core
 public import Parser_EndOfInput_Primitives
 public import Parser_Match_Primitives
 public import Either_Primitives
-internal import Array_Primitives_Core
+internal import Array_Primitives
 
 extension Byte {
     /// Namespace for byte-literal types — fixed byte sequences interpreted

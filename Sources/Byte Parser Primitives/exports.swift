@@ -11,7 +11,7 @@
 // Collection.Protocol conformances on the underlying Input.Slice /
 // Array.Indexed.
 @_exported public import Input_Primitives
-@_exported public import Array_Dynamic_Primitives
+@_exported public import Array_Primitives
 // Re-export the cursor + index modules so consumers using `Cursor<Byte>`
 // (the institute's borrowed-bytes cursor — substrate for byte parsing)
 // get the substrate types in scope without an extra import.
