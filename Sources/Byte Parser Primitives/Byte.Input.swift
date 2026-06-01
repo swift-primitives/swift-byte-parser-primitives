@@ -23,23 +23,22 @@ public import Array_Primitives
 extension Byte {
     /// The canonical byte-stream input for byte-domain parsers.
     ///
-    /// Built on `Input.Slice<Array<Byte>.Indexed<Byte>>` — a zero-copy
-    /// view over the institute's indexed byte array. Conforms to
-    /// `Input_Primitives.Input.Streaming` (and the stronger `Input.Protocol` for
-    /// backtracking-capable parsers) because `Array<Byte>.Indexed<Byte>`
-    /// is `Collection.\`Protocol\``-conforming and `Copyable`.
+    /// Built on `Input.Slice<Array<Byte>>` — a zero-copy view over a
+    /// byte array. Conforms to `Input_Primitives.Input.Streaming` (and the
+    /// stronger `Input.Protocol` for backtracking-capable parsers) because
+    /// `Array<Byte>` is `Collection.\`Protocol\``-conforming and `Copyable`.
     ///
     /// ```swift
     /// var input = Byte.Input([0x48, 0x65, 0x6C])
     /// try Byte.Parser<Byte.Input>(0x48).parse(&input)
     /// // input now cursors past 0x48 to 0x65
     /// ```
-    public typealias Input = Input_Primitives.Input.Slice<Array<Byte>.Indexed<Byte>>
+    public typealias Input = Input_Primitives.Input.Slice<Array<Byte>>
 }
 
 // MARK: - Convenience initializers on Byte.Input
 
-extension Input_Primitives.Input.Slice where Base == Array<Byte>.Indexed<Byte> {
+extension Input_Primitives.Input.Slice where Base == Array<Byte> {
     /// Creates a byte-stream input from `[Byte]`.
     @inlinable
     public init(_ bytes: Swift.Array<Byte>) {
@@ -47,7 +46,7 @@ extension Input_Primitives.Input.Slice where Base == Array<Byte>.Indexed<Byte> {
         for byte in bytes {
             storage.append(byte)
         }
-        self = Input.Slice(Array<Byte>.Indexed<Byte>(storage))
+        self = Input.Slice(storage)
     }
 
     /// Creates an input cursor from any byte collection.
@@ -70,7 +69,7 @@ extension Input_Primitives.Input.Slice where Base == Array<Byte>.Indexed<Byte> {
         for byte in bytes {
             storage.append(Byte(byte))
         }
-        self = Input.Slice(Array<Byte>.Indexed<Byte>(storage))
+        self = Input.Slice(storage)
     }
 
     /// Creates a byte-stream input from a string's UTF-8 representation.
