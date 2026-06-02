@@ -31,6 +31,7 @@ let package = Package(
         .package(url: "https://github.com/swift-primitives/swift-byte-cursor-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-memory-cursor-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-index-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-collection-primitives.git", branch: "main"),
     ],
     targets: [
         .target(
@@ -49,6 +50,7 @@ let package = Package(
                 .product(name: "Byte Cursor Primitives", package: "swift-byte-cursor-primitives"),
                 .product(name: "Memory Cursor Primitives", package: "swift-memory-cursor-primitives"),
                 .product(name: "Index Primitives", package: "swift-index-primitives"),
+                .product(name: "Collection Primitives", package: "swift-collection-primitives"),
             ]
         ),
         .target(
