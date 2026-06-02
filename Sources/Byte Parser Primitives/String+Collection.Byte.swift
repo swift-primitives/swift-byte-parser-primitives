@@ -26,6 +26,13 @@ extension Swift.String {
     /// - Parameters:
     ///   - bytes: an institute byte collection (e.g. a parser's input slice).
     ///   - encoding: the UTF-8 codec.
+    ///
+    /// `@_disfavoredOverload` so that a type conforming to BOTH this institute
+    /// `Collection.`Protocol`` and `Swift.Sequence` (e.g. the concrete `Byte.Input`)
+    /// resolves to swift-byte-primitives' `Swift.Sequence` overload — identical
+    /// result — leaving this overload as the sole candidate only for institute-only
+    /// collections (a generic `Collection.Slice.`Protocol``-bound parser input).
+    @_disfavoredOverload
     @inlinable
     public init<C: Collection.`Protocol`>(
         decoding bytes: borrowing C,
