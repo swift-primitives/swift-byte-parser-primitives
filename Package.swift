@@ -23,15 +23,32 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/swift-primitives/swift-parser-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main"),
+        // W3 PRUNE: byte-parser consumes Cursor<Byte> (storage now
+        // Swift.Span<Byte>); path-dep every CHANGED package it uses + span (the
+        // Span.Borrowed.`Protocol` conformance home), and the transitive
+        // data-structure cluster for identity-unification (Finding 3/7/8).
+        .package(path: "../swift-byte-primitives"),
         .package(url: "https://github.com/swift-primitives/swift-either-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-input-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-array-primitives.git", branch: "main"),
+        .package(path: "../swift-array-primitives"),
         .package(url: "https://github.com/swift-primitives/swift-cursor-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-byte-cursor-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-memory-cursor-primitives.git", branch: "main"),
+        .package(path: "../swift-byte-cursor-primitives"),
+        .package(path: "../swift-memory-cursor-primitives"),
         .package(url: "https://github.com/swift-primitives/swift-index-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-collection-primitives.git", branch: "main"),
+        .package(path: "../swift-span-primitives"),
+        // transitive-collision overrides (Finding 7)
+        .package(path: "../swift-memory-primitives"),
+        .package(path: "../swift-storage-primitives"),
+        .package(path: "../swift-storage-split-primitives"),
+        .package(path: "../swift-buffer-primitives"),
+        .package(path: "../swift-buffer-linear-primitives"),
+        .package(path: "../swift-buffer-slots-primitives"),
+        .package(path: "../swift-hash-table-primitives"),
+        .package(path: "../swift-memory-iterator-primitives"),
+        .package(path: "../swift-set-ordered-primitives"),
+        .package(path: "../swift-heap-primitives"),
+        .package(path: "../swift-stack-primitives"),
     ],
     targets: [
         .target(
@@ -51,6 +68,9 @@ let package = Package(
                 .product(name: "Memory Cursor Primitives", package: "swift-memory-cursor-primitives"),
                 .product(name: "Index Primitives", package: "swift-index-primitives"),
                 .product(name: "Collection Primitives", package: "swift-collection-primitives"),
+                // W3 PRUNE: Swift.Span: Span.Borrowed.`Protocol` conformance for
+                // the cursor operations in Cursor+Byte.swift (Finding 3/8).
+                .product(name: "Span Protocol Primitives", package: "swift-span-primitives"),
             ]
         ),
         .target(
