@@ -25,7 +25,7 @@ let package = Package(
         .package(url: "https://github.com/swift-primitives/swift-parser-primitives.git", branch: "main"),
         // W3 PRUNE: byte-parser consumes Cursor<Byte> (storage now
         // Swift.Span<Byte>); path-dep every CHANGED package it uses + span (the
-        // Span.Borrowed.`Protocol` conformance home), and the transitive
+        // Span.`Protocol` conformance home), and the transitive
         // data-structure cluster for identity-unification (Finding 3/7/8).
         .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-either-primitives.git", branch: "main"),
@@ -67,7 +67,7 @@ let package = Package(
                 .product(name: "Memory Cursor Primitives", package: "swift-memory-cursor-primitives"),
                 .product(name: "Index Primitives", package: "swift-index-primitives"),
                 .product(name: "Collection Primitives", package: "swift-collection-primitives"),
-                // W3 PRUNE: Swift.Span: Span.Borrowed.`Protocol` conformance for
+                // W3 PRUNE: Swift.Span: Span.`Protocol` conformance for
                 // the cursor operations in Cursor+Byte.swift (Finding 3/8).
                 .product(name: "Span Protocol Primitives", package: "swift-span-primitives"),
             ]

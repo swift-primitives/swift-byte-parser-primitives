@@ -2,7 +2,7 @@ public import Byte_Primitives
 public import Cursor_Primitives
 public import Memory_Cursor_Primitives
 // W3 PRUNE: Cursor<Byte>.storage is now Swift.Span<Byte>; cursor operations
-// dispatch on `Swift.Span: Span.Borrowed.`Protocol`` — import the conformance
+// dispatch on `Swift.Span: Span.`Protocol`` — import the conformance
 // directly for the inlinable call sites (Finding 3/8).
 public import Span_Protocol_Primitives
 
