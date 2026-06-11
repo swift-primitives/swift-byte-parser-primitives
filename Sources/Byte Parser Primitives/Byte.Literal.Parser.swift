@@ -42,10 +42,10 @@ extension Byte.Literal {
                 to: UInt8.self,
                 capacity: string.utf8CodeUnitCount
             ) { ptr in
-                let buf = UnsafeBufferPointer(start: ptr, count: string.utf8CodeUnitCount)
+                let buf = unsafe UnsafeBufferPointer(start: ptr, count: string.utf8CodeUnitCount)
                 var typed: [Byte] = []
                 typed.reserveCapacity(buf.count)
-                for byte in buf { typed.append(Byte(byte)) }
+                for unsafe byte in unsafe buf { typed.append(Byte(byte)) }
                 return typed
             })
         }

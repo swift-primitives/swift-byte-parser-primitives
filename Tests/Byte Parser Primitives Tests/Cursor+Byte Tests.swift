@@ -33,8 +33,8 @@ extension CursorByteTests.`Starts With` {
     func `returns true for matching prefix`() {
         let bytes: [Byte] = [0x01, 0x02, 0x03, 0x04]
 
-        let result = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
+        let result = unsafe bytes.withUnsafeBufferPointer { buffer in
+            let span = unsafe Span(_unsafeElements: buffer)
             let view = Cursor<Byte>(span)
             return view.starts(with: [0x01, 0x02] as [Byte])
         }
@@ -46,8 +46,8 @@ extension CursorByteTests.`Starts With` {
     func `returns false for non-matching prefix`() {
         let bytes: [Byte] = [0x01, 0x02, 0x03]
 
-        let result = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
+        let result = unsafe bytes.withUnsafeBufferPointer { buffer in
+            let span = unsafe Span(_unsafeElements: buffer)
             let view = Cursor<Byte>(span)
             return view.starts(with: [0x01, 0x03] as [Byte])
         }
@@ -59,8 +59,8 @@ extension CursorByteTests.`Starts With` {
     func `returns true for empty prefix on any view`() {
         let bytes: [Byte] = [0x01, 0x02]
 
-        let result = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
+        let result = unsafe bytes.withUnsafeBufferPointer { buffer in
+            let span = unsafe Span(_unsafeElements: buffer)
             let view = Cursor<Byte>(span)
             return view.starts(with: [] as [Byte])
         }
@@ -72,8 +72,8 @@ extension CursorByteTests.`Starts With` {
     func `returns false when prefix exceeds remaining`() {
         let bytes: [Byte] = [0x01]
 
-        let result = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
+        let result = unsafe bytes.withUnsafeBufferPointer { buffer in
+            let span = unsafe Span(_unsafeElements: buffer)
             let view = Cursor<Byte>(span)
             return view.starts(with: [0x01, 0x02] as [Byte])
         }
@@ -90,8 +90,8 @@ extension CursorByteTests.`Copy To Owned` {
     func `creates independent owned input from fresh view`() {
         let bytes: [Byte] = [0x01, 0x02, 0x03, 0x04]
 
-        let (ownedCount, ownedFirst) = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
+        let (ownedCount, ownedFirst) = unsafe bytes.withUnsafeBufferPointer { buffer in
+            let span = unsafe Span(_unsafeElements: buffer)
             let view = Cursor<Byte>(span)
             let owned = view.copyToOwned()
             return (owned.count, owned.first)
@@ -105,8 +105,8 @@ extension CursorByteTests.`Copy To Owned` {
     func `copies only the remaining bytes after partial consumption`() {
         let bytes: [Byte] = [0x01, 0x02, 0x03, 0x04]
 
-        let (ownedCount, ownedFirst) = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
+        let (ownedCount, ownedFirst) = unsafe bytes.withUnsafeBufferPointer { buffer in
+            let span = unsafe Span(_unsafeElements: buffer)
             var view = Cursor<Byte>(span)
 
             _ = view.consume()
@@ -128,8 +128,8 @@ extension CursorByteTests.Integration {
     func `parse fixed-width integer via Cursor`() {
         let bytes: [Byte] = [0xDE, 0xAD, 0xBE, 0xEF]
 
-        let (value, isAtEnd) = bytes.withUnsafeBufferPointer { buffer in
-            let span = Span(_unsafeElements: buffer)
+        let (value, isAtEnd) = unsafe bytes.withUnsafeBufferPointer { buffer in
+            let span = unsafe Span(_unsafeElements: buffer)
             var view = Cursor<Byte>(span)
 
             let b0 = view.consume().underlying

@@ -19,30 +19,48 @@
 public import Byte_Primitives
 public import Input_Primitives
 public import Array_Primitives
+public import Column_Primitives
+// The column vocabulary is pure typealiases (zero re-exports): conformances of
+// the expanded column spelling resolve against the modules that DECLARE them,
+// and MemberImportVisibility requires those modules imported by this file —
+// Shared's store/buffer seam + Span.Protocol conformances (Shared_Primitive),
+// the heap buffer's (Buffer_Linear_Primitive), the contiguous storage's
+// (Storage_Contiguous_Primitives), and Memory.Heap: Region
+// (Memory_Heap_Primitives).
+public import Shared_Primitive
+public import Buffer_Linear_Primitive
+public import Buffer_Linear_Primitives
+public import Storage_Contiguous_Primitives
+public import Memory_Heap_Primitives
 
 extension Byte {
     /// The canonical byte-stream input for byte-domain parsers.
     ///
-    /// Built on `Input.Slice<Array<Byte>>` — a zero-copy view over a
-    /// byte array. Conforms to `Input_Primitives.Input.Streaming` (and the
-    /// stronger `Input.Protocol` for backtracking-capable parsers) because
-    /// `Array<Byte>` is `Collection.\`Protocol\``-conforming and `Copyable`.
+    /// Built on `Input.Slice<Array<Column.Shared<Byte>>>` — a zero-copy view
+    /// over a byte array on the `Shared` (CoW value-semantic) column. Conforms
+    /// to `Input_Primitives.Input.Streaming` (and the stronger `Input.Protocol`
+    /// for backtracking-capable parsers) because `Array<Column.Shared<Byte>>`
+    /// is `Collection.\`Protocol\``-conforming (the column vends a span, so the
+    /// span-bridged Collection lattice chains through) and `Copyable` (the CoW
+    /// column over a `Copyable` element — `Input.Slice` requires a `Copyable`
+    /// `Base`, and parser backtracking copies inputs, so value semantics are
+    /// load-bearing here).
     ///
     /// ```swift
     /// var input = Byte.Input([0x48, 0x65, 0x6C])
     /// try Byte.Parser<Byte.Input>(0x48).parse(&input)
     /// // input now cursors past 0x48 to 0x65
     /// ```
-    public typealias Input = Input_Primitives.Input.Slice<Array<Byte>>
+    public typealias Input = Input_Primitives.Input.Slice<Array<Column.Shared<Byte>>>
 }
 
 // MARK: - Convenience initializers on Byte.Input
 
-extension Input_Primitives.Input.Slice where Base == Array<Byte> {
+extension Input_Primitives.Input.Slice where Base == Array<Column.Shared<Byte>> {
     /// Creates a byte-stream input from `[Byte]`.
     @inlinable
     public init(_ bytes: Swift.Array<Byte>) {
-        var storage = Array<Byte>()
+        var storage = Array<Column.Shared<Byte>>()
         for byte in bytes {
             storage.append(byte)
         }
@@ -65,7 +83,7 @@ extension Input_Primitives.Input.Slice where Base == Array<Byte> {
     @_disfavoredOverload
     @inlinable
     public init(_ bytes: Swift.Array<UInt8>) {
-        var storage = Array<Byte>()
+        var storage = Array<Column.Shared<Byte>>()
         for byte in bytes {
             storage.append(Byte(byte))
         }
