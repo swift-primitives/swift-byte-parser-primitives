@@ -1,5 +1,5 @@
 # .github/metadata.yaml
-description: "Byte-specific parser combinators for Swift — Parser.Byte and other byte-element-typed parsers built on swift-parser-primitives."
+description: "Byte.Parser — byte-domain parser combinators (single-byte and byte-literal matchers) over a streaming byte input, built on swift-parser-primitives."
 topics:
   - primitives
   - parser
