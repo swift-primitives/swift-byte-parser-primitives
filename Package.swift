@@ -48,7 +48,7 @@ let package = Package(
         .target(
             name: "Byte Parser Primitives",
             dependencies: [
-                .product(name: "Parser Primitives Core", package: "swift-parser-primitives"),
+                .product(name: "Parser Primitives", package: "swift-parser-primitives"),
                 .product(name: "Parser Match Primitives", package: "swift-parser-primitives"),
                 .product(name: "Parser EndOfInput Primitives", package: "swift-parser-primitives"),
                 .product(name: "Parser Take Primitives", package: "swift-parser-primitives"),

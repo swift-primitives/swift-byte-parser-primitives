@@ -10,7 +10,7 @@
 // across all parser packages).
 
 public import Byte_Primitives
-public import Parser_Primitives_Core
+public import Parser_Primitives
 public import Parser_EndOfInput_Primitives
 public import Parser_Match_Primitives
 public import Either_Primitives
@@ -36,9 +36,9 @@ extension Byte {
     }
 }
 
-extension Byte.Parser: Parser_Primitives_Core.Parser.`Protocol` {
+extension Byte.Parser: Parser_Primitives.Parser.`Protocol` {
     public typealias Output = Void
-    public typealias Failure = Either<Parser_Primitives_Core.Parser.EndOfInput.Error, Parser_Primitives_Core.Parser.Match.Error>
+    public typealias Failure = Either<Parser_Primitives.Parser.EndOfInput.Error, Parser_Primitives.Parser.Match.Error>
     public typealias Body = Never
 
     @inlinable
@@ -55,7 +55,7 @@ extension Byte.Parser: Parser_Primitives_Core.Parser.`Protocol` {
 
 // MARK: - Printer Conformance
 
-extension Byte.Parser: Parser_Primitives_Core.Parser.Printer
+extension Byte.Parser: Parser_Primitives.Parser.Printer
 where Input: RangeReplaceableCollection {
     @inlinable
     public func print(_ output: Void, into input: inout Input) {

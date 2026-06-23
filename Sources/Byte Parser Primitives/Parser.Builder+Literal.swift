@@ -11,12 +11,12 @@
 // byte-domain types.
 
 public import Byte_Primitives
-public import Parser_Primitives_Core
+public import Parser_Primitives
 public import Parser_Take_Primitives
 
 // MARK: - Parser.Builder String Literal Support
 
-extension Parser_Primitives_Core.Parser.Builder
+extension Parser_Primitives.Parser.Builder
 where Input: Input_Primitives.Input.Streaming, Input.Element == Byte {
     /// Enables bare string literals as `Byte.Literal.Parser` in `var body`
     /// builders.
@@ -29,7 +29,7 @@ where Input: Input_Primitives.Input.Streaming, Input.Element == Byte {
 
     /// Re-declared generic pass-through for the constrained extension.
     @inlinable
-    public static func buildExpression<P: Parser_Primitives_Core.Parser.`Protocol`>(
+    public static func buildExpression<P: Parser_Primitives.Parser.`Protocol`>(
         _ parser: P
     ) -> P where P.Input == Input {
         parser
@@ -38,7 +38,7 @@ where Input: Input_Primitives.Input.Streaming, Input.Element == Byte {
 
 // MARK: - Parser.Builder Byte Array Literal Support
 
-extension Parser_Primitives_Core.Parser.Builder where Input == ArraySlice<Byte> {
+extension Parser_Primitives.Parser.Builder where Input == ArraySlice<Byte> {
     /// Converts a `[Byte]` array literal to a parser.
     @inlinable
     public static func buildExpression(_ bytes: [Byte]) -> [Byte] {
@@ -48,7 +48,7 @@ extension Parser_Primitives_Core.Parser.Builder where Input == ArraySlice<Byte> 
 
 // MARK: - Parser.Take.Builder String Literal Support
 
-extension Parser_Primitives_Core.Parser.Take.Builder
+extension Parser_Primitives.Parser.Take.Builder
 where Input: Input_Primitives.Input.Streaming, Input.Element == Byte {
     /// Enables bare string literals as `Byte.Literal.Parser` in builder bodies.
     ///
@@ -72,7 +72,7 @@ where Input: Input_Primitives.Input.Streaming, Input.Element == Byte {
     /// the generic `buildExpression` from the unconstrained extension,
     /// causing non-literal parsers to fail type-checking.
     @inlinable
-    public static func buildExpression<P: Parser_Primitives_Core.Parser.`Protocol`>(
+    public static func buildExpression<P: Parser_Primitives.Parser.`Protocol`>(
         _ parser: P
     ) -> P where P.Input == Input {
         parser
@@ -81,7 +81,7 @@ where Input: Input_Primitives.Input.Streaming, Input.Element == Byte {
 
 // MARK: - Parser.Take.Builder Byte Array Literal Support
 
-extension Parser_Primitives_Core.Parser.Take.Builder where Input == ArraySlice<Byte> {
+extension Parser_Primitives.Parser.Take.Builder where Input == ArraySlice<Byte> {
     /// Converts a `[Byte]` array literal to a parser.
     ///
     /// This enables using byte arrays directly in `Parser.Take.Sequence`

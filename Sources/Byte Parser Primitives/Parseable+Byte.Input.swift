@@ -8,7 +8,7 @@
 // byte-parser-primitives (the new home for byte-domain parser concerns).
 
 public import Byte_Primitives
-public import Parser_Primitives_Core
+public import Parser_Primitives
 
 // MARK: - Byte Input Convenience
 

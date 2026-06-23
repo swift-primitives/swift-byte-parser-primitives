@@ -6,7 +6,7 @@
 // `Parser` is its parsing role.
 
 public import Byte_Primitives
-public import Parser_Primitives_Core
+public import Parser_Primitives
 public import Parser_EndOfInput_Primitives
 public import Parser_Match_Primitives
 public import Either_Primitives
@@ -52,9 +52,9 @@ extension Byte.Literal {
     }
 }
 
-extension Byte.Literal.Parser: Parser_Primitives_Core.Parser.`Protocol` {
+extension Byte.Literal.Parser: Parser_Primitives.Parser.`Protocol` {
     public typealias Output = Void
-    public typealias Failure = Either<Parser_Primitives_Core.Parser.EndOfInput.Error, Parser_Primitives_Core.Parser.Match.Error>
+    public typealias Failure = Either<Parser_Primitives.Parser.EndOfInput.Error, Parser_Primitives.Parser.Match.Error>
     public typealias Body = Never
 
     @inlinable
@@ -100,7 +100,7 @@ extension Byte.Literal.Parser: ExpressibleByExtendedGraphemeClusterLiteral {
 
 // MARK: - Printer Conformance
 
-extension Byte.Literal.Parser: Parser_Primitives_Core.Parser.Printer
+extension Byte.Literal.Parser: Parser_Primitives.Parser.Printer
 where Input: RangeReplaceableCollection {
     @inlinable
     public func print(_ output: Void, into input: inout Input) {
