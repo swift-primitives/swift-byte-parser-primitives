@@ -5,21 +5,25 @@
 @_exported public import Parser_EndOfInput_Primitives
 @_exported public import Parser_Match_Primitives
 @_exported public import Either_Primitives
-// Re-export Input_Primitives: it supplies Byte.Input's underlying shape
-// (Input.Slice<…>) and the Input.Protocol / Input.Streaming conformances on
-// Input.Slice that Byte.Input consumers require for member-import visibility.
+// Re-export the modules that form Byte.Input's underlying shape
+// (Input.Slice<Array<Column.Shared<Byte>>>). Byte.Input's @inlinable
+// constructors expand the institute `Array<Column.Shared<Byte>>` and its
+// Collection.Protocol conformance into caller code, and @inlinable parser APIs
+// (e.g. Binary.Parser.parseWhole) carry that requirement on to leaf consumers,
+// so both modules MUST stay @_exported for member-import visibility of the
+// Input.Protocol / Collection.Protocol conformances.
+//
+// DO NOT DEMOTE Array_Primitives. Demoting it to a non-re-exported import does
+// surface a real-looking "leak" — the institute `Array` becomes visible in a
+// consumer's file scope and shadows `Swift.Array` (e.g. breaking
+// `try Array<ASCII.Code>(bytes)` in swift-rfc-791's IPv4.Address) — but the
+// re-export is load-bearing: removing it breaks binary-parser's @inlinable
+// parser conformance ("cannot use conformance of 'Array<S>' to 'Protocol' … ;
+// 'Array_Primitives' was not imported by this file"; verified 2026-06-30,
+// supersedes 7852b97). The correct resolution is consumer-side — a file that
+// hits the shadow qualifies the name (`Swift.Array<…>`).
 @_exported public import Input_Primitives
-// [re-export hygiene] Array_Primitives is intentionally NOT @_exported here.
-// @_exported-re-exporting it leaked the institute `Array` type into every
-// transitive consumer's unqualified file scope, where it shadowed `Swift.Array`
-// and broke byte→ASCII type-ups such as `try Array<ASCII.Code>(bytes)` — failing
-// with "type 'ASCII.Code' does not conform to protocol '__BufferProtocol'" — in
-// downstream RFC packages (e.g. swift-rfc-791's folded IPv4.Address). The
-// institute `Array` and its `Collection.Protocol` conformance on
-// `Array<Column.Shared<Byte>>` (Byte.Input's substrate) stay part of this
-// module's public interface via `Byte.Input.swift`'s own `public import
-// Array_Primitives`, so Byte.Input consumers keep what they need without the
-// shadowing name re-export.
+@_exported public import Array_Primitives
 // Re-export the cursor + index modules so consumers using `Cursor<Byte>`
 // (the institute's borrowed-bytes cursor — substrate for byte parsing)
 // get the substrate types in scope without an extra import.
