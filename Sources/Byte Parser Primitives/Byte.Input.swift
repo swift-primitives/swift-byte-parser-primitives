@@ -19,27 +19,34 @@
 public import Byte_Primitives
 public import Input_Primitives
 public import Array_Primitives
+public import Array_Primitive
 public import Column_Primitives
 // The column vocabulary is pure typealiases (zero re-exports): conformances of
-// the expanded column spelling resolve against the modules that DECLARE them,
-// and MemberImportVisibility requires those modules imported by this file —
-// Shared's store/buffer seam + Span.Protocol conformances (Shared_Primitive),
-// the heap buffer's (Buffer_Linear_Primitive), the contiguous storage's
-// (Storage_Contiguous_Primitives), and Memory.Heap: Region
-// (Memory_Heap_Primitives).
+// the column spelling resolve against the modules that DECLARE them, and
+// MemberImportVisibility requires those modules imported by this file. The input
+// rides the `Shared` (CoW) column through the CARRIER spelling
+// `__Array<Column.Shared<Byte>>` ([DS-025]/[DS-028] — the carrier keeps `S`
+// Copyable and the element `Byte`, preserving backtracking and `.append(byte)`).
+// `Column.Shared<Byte>` expands to `Shared<Byte, heap-buffer>`, so the seam ops
+// need BOTH the Shared column's own store/buffer/Span.Protocol conformances
+// (Shared_Primitive) AND its heap-buffer backing's — the linear buffer's
+// (Buffer_Linear_Primitive), the contiguous storage's
+// (Storage_Contiguous_Primitives), Memory.Allocator: Region
+// (Memory_Allocator_Primitive), and Memory.Heap: Region (Memory_Heap_Primitives).
 public import Shared_Primitive
 public import Buffer_Linear_Primitive
 public import Buffer_Linear_Primitives
 public import Storage_Contiguous_Primitives
+public import Memory_Allocator_Primitive
 public import Memory_Heap_Primitives
 
 extension Byte {
     /// The canonical byte-stream input for byte-domain parsers.
     ///
-    /// Built on `Input.Slice<Array<Column.Shared<Byte>>>` — a zero-copy view
+    /// Built on `Input.Slice<__Array<Column.Shared<Byte>>>` — a zero-copy view
     /// over a byte array on the `Shared` (CoW value-semantic) column. Conforms
     /// to `Input_Primitives.Input.Streaming` (and the stronger `Input.Protocol`
-    /// for backtracking-capable parsers) because `Array<Column.Shared<Byte>>`
+    /// for backtracking-capable parsers) because `__Array<Column.Shared<Byte>>`
     /// is `Collection.\`Protocol\``-conforming (the column vends a span, so the
     /// span-bridged Collection lattice chains through) and `Copyable` (the CoW
     /// column over a `Copyable` element — `Input.Slice` requires a `Copyable`
@@ -51,16 +58,16 @@ extension Byte {
     /// try Byte.Parser<Byte.Input>(0x48).parse(&input)
     /// // input now cursors past 0x48 to 0x65
     /// ```
-    public typealias Input = Input_Primitives.Input.Slice<Array<Column.Shared<Byte>>>
+    public typealias Input = Input_Primitives.Input.Slice<__Array<Column.Shared<Byte>>>
 }
 
 // MARK: - Convenience initializers on Byte.Input
 
-extension Input_Primitives.Input.Slice where Base == Array<Column.Shared<Byte>> {
+extension Input_Primitives.Input.Slice where Base == __Array<Column.Shared<Byte>> {
     /// Creates a byte-stream input from `[Byte]`.
     @inlinable
     public init(_ bytes: Swift.Array<Byte>) {
-        var storage = Array<Column.Shared<Byte>>()
+        var storage = __Array<Column.Shared<Byte>>()
         for byte in bytes {
             storage.append(byte)
         }
@@ -83,7 +90,7 @@ extension Input_Primitives.Input.Slice where Base == Array<Column.Shared<Byte>> 
     @_disfavoredOverload
     @inlinable
     public init(_ bytes: Swift.Array<UInt8>) {
-        var storage = Array<Column.Shared<Byte>>()
+        var storage = __Array<Column.Shared<Byte>>()
         for byte in bytes {
             storage.append(Byte(byte))
         }

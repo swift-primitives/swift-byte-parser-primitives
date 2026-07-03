@@ -38,6 +38,7 @@ let package = Package(
         .package(url: "https://github.com/swift-primitives/swift-buffer-linear-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-storage-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-memory-heap-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-memory-allocation-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-cursor-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-memory-cursor-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-index-primitives.git", branch: "main"),
@@ -57,6 +58,11 @@ let package = Package(
                 .product(name: "Either Primitives", package: "swift-either-primitives"),
                 .product(name: "Input Primitives", package: "swift-input-primitives"),
                 .product(name: "Array Primitives", package: "swift-array-primitives"),
+                // The hoisted carrier `__Array` is spelled directly (Byte.Input rides
+                // the `Shared` CoW column via `__Array<Column.Shared<Byte>>`); the
+                // underscored carrier is not surfaced through the umbrella's
+                // `@_exported import`, so the carrier target is imported directly.
+                .product(name: "Array Primitive", package: "swift-array-primitives"),
                 // W5-4: the column vocabulary (Column.Shared spelling) + the
                 // modules MemberImportVisibility demands for the chained
                 // conformances of Byte.Input's base column.
@@ -66,6 +72,11 @@ let package = Package(
                 .product(name: "Buffer Linear Primitives", package: "swift-buffer-linear-primitives"),
                 .product(name: "Storage Contiguous Primitives", package: "swift-storage-primitives"),
                 .product(name: "Memory Heap Primitives", package: "swift-memory-heap-primitives"),
+                // The `Shared` column's heap-buffer backing surfaces
+                // `Memory.Allocator: Region`; the carrier spelling makes that
+                // conformance load-bearing at this file, so MemberImportVisibility
+                // demands the allocator module directly.
+                .product(name: "Memory Allocator Primitive", package: "swift-memory-allocation-primitives"),
                 .product(name: "Cursor Primitives", package: "swift-cursor-primitives"),
                 .product(name: "Cursor Primitive", package: "swift-cursor-primitives"),
                 .product(name: "Memory Cursor Primitives", package: "swift-memory-cursor-primitives"),
