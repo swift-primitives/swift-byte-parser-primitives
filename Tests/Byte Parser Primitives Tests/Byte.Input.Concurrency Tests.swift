@@ -3,7 +3,7 @@ import Testing
 
 // W3 rider — BYTE-PARSER's own composition under concurrency (arc-1,
 // GOAL-tower-arc-shared-soundness §W3): `Byte.Input` is
-// `Input.Slice<Array<Column.Shared<Byte>>>` (`7a057d5`) — a zero-copy slice
+// `Input.Slice<Array<Byte>.Shared>` (`7a057d5`) — a zero-copy slice
 // whose VALUE SEMANTICS carry parser backtracking (attempts run on copies;
 // only successes write back). The rider runs that exact discipline across
 // tasks: every task backtrack-parses its own slice copy of ONE shared column

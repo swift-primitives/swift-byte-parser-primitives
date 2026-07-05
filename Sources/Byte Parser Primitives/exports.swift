@@ -6,8 +6,8 @@
 @_exported public import Parser_Match_Primitives
 @_exported public import Either_Primitives
 // Re-export the modules that form Byte.Input's underlying shape
-// (Input.Slice<Array<Column.Shared<Byte>>>). Byte.Input's @inlinable
-// constructors expand the institute `Array<Column.Shared<Byte>>` and its
+// (Input.Slice<Array<Byte>.Shared>). Byte.Input's @inlinable
+// constructors expand the institute `Array<Byte>.Shared` and its
 // Collection.Protocol conformance into caller code, and @inlinable parser APIs
 // (e.g. Binary.Parser.parseWhole) carry that requirement on to leaf consumers,
 // so both modules MUST stay @_exported for member-import visibility of the
