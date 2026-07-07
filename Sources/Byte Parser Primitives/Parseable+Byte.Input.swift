@@ -22,7 +22,7 @@ where
     /// - Parameter ascii: The ASCII bytes to parse.
     /// - Throws: `Parser.Failure` if parsing fails.
     @inlinable
-    public init(ascii: Swift.Array<UInt8>) throws(Parser.Failure) {
+    public init(ascii: [UInt8]) throws(Parser.Failure) {
         var input = Byte.Input(ascii)
         self = try Self.parser.parse(&input)
     }

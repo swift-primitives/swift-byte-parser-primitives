@@ -85,7 +85,7 @@ extension `Byte.Literal.Parser Tests`.Integration {
     @Test
     func `Byte.Literal.Parser composes with Byte.Parser`() throws(Byte.Literal.Parser<Byte.Input>.Failure) {
         let prefix: Byte.Literal.Parser<Byte.Input> = "hi"
-        let suffix = Byte.Parser<Byte.Input>(0x21) // '!'
+        let suffix = Byte.Parser<Byte.Input>(0x21)  // '!'
         var input = Byte.Input(utf8: "hi!")
 
         try prefix.parse(&input)

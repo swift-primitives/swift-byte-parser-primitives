@@ -35,7 +35,7 @@ struct `Byte.Input Concurrency Tests` {
         let outcomes = await withTaskGroup(of: Bool.self, returning: [Bool].self) { group in
             for _ in 0..<width {
                 group.addTask {
-                    var mine = source                    // slice copy: shares the column box
+                    var mine = source  // slice copy: shares the column box
                     var good = true
                     for expected in pattern {
                         // The backtracking discipline: the failing attempt runs on
@@ -47,7 +47,7 @@ struct `Byte.Input Concurrency Tests` {
                         let advanced = (try? Byte.Parser<Byte.Input>(expected).parse(&mine)) != nil
                         good = good && advanced
                     }
-                    return good && mine.isEmpty          // consumed the whole pattern
+                    return good && mine.isEmpty  // consumed the whole pattern
                 }
             }
             var out: [Bool] = []
@@ -56,7 +56,7 @@ struct `Byte.Input Concurrency Tests` {
         }
         #expect(outcomes.count == width)
         #expect(outcomes.allSatisfy { $0 })
-        #expect(source.first == 0x41)                    // the source slice never moved
+        #expect(source.first == 0x41)  // the source slice never moved
         #expect(!source.isEmpty)
     }
 
@@ -67,9 +67,9 @@ struct `Byte.Input Concurrency Tests` {
         let outcomes = await withTaskGroup(of: Bool.self, returning: [Bool].self) { group in
             for depth in 0..<16 {
                 group.addTask {
-                    var mine = source                    // sibling slice over the same box
+                    var mine = source  // sibling slice over the same box
                     var good = true
-                    for i in 0..<depth {                 // consume exactly `depth` bytes
+                    for i in 0..<depth {  // consume exactly `depth` bytes
                         let advanced = (try? Byte.Parser<Byte.Input>(pattern[i]).parse(&mine)) != nil
                         good = good && advanced
                     }
@@ -83,6 +83,6 @@ struct `Byte.Input Concurrency Tests` {
         }
         #expect(outcomes.count == 16)
         #expect(outcomes.allSatisfy { $0 })
-        #expect(source.first == 0x41)                    // divergence stayed value-local
+        #expect(source.first == 0x41)  // divergence stayed value-local
     }
 }

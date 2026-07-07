@@ -16,11 +16,15 @@
 // over any `Input_Primitives.Input.Streaming` conformer. `Byte.Input` is the
 // canonical concrete choice for byte-array streams.
 
-public import Byte_Primitives
-public import Input_Primitives
-public import Array_Primitives
 public import Array_Primitive
+public import Array_Primitives
+public import Buffer_Linear_Primitive
+public import Buffer_Linear_Primitives
+public import Byte_Primitives
 public import Column_Primitives
+public import Input_Primitives
+public import Memory_Allocator_Primitive
+public import Memory_Heap_Primitives
 // The column vocabulary is pure typealiases (zero re-exports): conformances of
 // the column spelling resolve against the modules that DECLARE them, and
 // MemberImportVisibility requires those modules imported by this file. The input
@@ -34,11 +38,7 @@ public import Column_Primitives
 // (Storage_Contiguous_Primitives), Memory.Allocator: Region
 // (Memory_Allocator_Primitive), and Memory.Heap: Region (Memory_Heap_Primitives).
 public import Ownership_Shared_Primitive
-public import Buffer_Linear_Primitive
-public import Buffer_Linear_Primitives
 public import Storage_Contiguous_Primitives
-public import Memory_Allocator_Primitive
-public import Memory_Heap_Primitives
 
 extension Byte {
     /// The canonical byte-stream input for byte-domain parsers.
@@ -66,7 +66,10 @@ extension Byte {
 extension Input_Primitives.Input.Slice where Base == Array<Byte>.Shared {
     /// Creates a byte-stream input from `[Byte]`.
     @inlinable
-    public init(_ bytes: Swift.Array<Byte>) {
+    public init(_ bytes: [Byte]) {
+        // `Array` here is the institute front-door alias ([DS-028]), not Swift.Array —
+        // `[Byte]` sugar would resolve to the stdlib type, which has no `.Shared`.
+        // swiftlint:disable:next syntactic_sugar
         var storage = Array<Byte>.Shared()
         for byte in bytes {
             storage.append(byte)
@@ -89,7 +92,10 @@ extension Input_Primitives.Input.Slice where Base == Array<Byte>.Shared {
     /// satisfy the call site.
     @_disfavoredOverload
     @inlinable
-    public init(_ bytes: Swift.Array<UInt8>) {
+    public init(_ bytes: [UInt8]) {
+        // `Array` here is the institute front-door alias ([DS-028]), not Swift.Array —
+        // `[Byte]` sugar would resolve to the stdlib type, which has no `.Shared`.
+        // swiftlint:disable:next syntactic_sugar
         var storage = Array<Byte>.Shared()
         for byte in bytes {
             storage.append(Byte(byte))
@@ -100,7 +106,7 @@ extension Input_Primitives.Input.Slice where Base == Array<Byte>.Shared {
     /// Creates a byte-stream input from a string's UTF-8 representation.
     @inlinable
     public init(utf8 string: Swift.String) {
-        self.init(Swift.Array<UInt8>(string.utf8))
+        self.init([UInt8](string.utf8))
     }
 
     /// Creates an input cursor from any UInt8 collection.
