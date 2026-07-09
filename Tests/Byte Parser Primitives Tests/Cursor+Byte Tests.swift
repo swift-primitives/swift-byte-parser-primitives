@@ -18,8 +18,8 @@ import Testing
 // Note: `Cursor<Byte>` is `~Copyable` and `~Escapable`, so tests must extract
 // values before using `#expect` since the macro doesn't support these types.
 
-@Suite("Cursor<Byte>")
-struct CursorByteTests {
+@Suite
+struct `Cursor Byte Tests` {
     @Suite struct `Starts With` {}
     @Suite struct `Copy To Owned` {}
     @Suite struct Integration {}
@@ -27,7 +27,7 @@ struct CursorByteTests {
 
 // MARK: - starts(with:)
 
-extension CursorByteTests.`Starts With` {
+extension `Cursor Byte Tests`.`Starts With` {
 
     @Test
     func `returns true for matching prefix`() {
@@ -84,7 +84,7 @@ extension CursorByteTests.`Starts With` {
 
 // MARK: - copyToOwned()
 
-extension CursorByteTests.`Copy To Owned` {
+extension `Cursor Byte Tests`.`Copy To Owned` {
 
     @Test
     func `creates independent owned input from fresh view`() {
@@ -122,7 +122,7 @@ extension CursorByteTests.`Copy To Owned` {
 
 // MARK: - Integration
 
-extension CursorByteTests.Integration {
+extension `Cursor Byte Tests`.Integration {
 
     @Test
     func `parse fixed-width integer via Cursor`() {
