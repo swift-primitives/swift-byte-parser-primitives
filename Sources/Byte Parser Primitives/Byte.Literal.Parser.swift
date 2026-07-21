@@ -114,14 +114,3 @@ extension Byte.Literal.Parser: ExpressibleByExtendedGraphemeClusterLiteral {
         self.bytes = typed
     }
 }
-
-// MARK: - Printer Conformance
-
-extension Byte.Literal.Parser: Parser_Primitives.Parser.Printer
-where Input: RangeReplaceableCollection {
-    /// Writes the matched byte sequence back into the input.
-    @inlinable
-    public func print(_ output: Void, into input: inout Input) {
-        input.insert(contentsOf: bytes, at: input.startIndex)
-    }
-}
